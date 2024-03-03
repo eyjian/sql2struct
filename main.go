@@ -46,6 +46,8 @@ type SqlTable struct {
     TableName    string          // 表名
     TableComment string          // 表的注释
     Fields       []SqlTableField // 字段列表
+    HaveTime     bool            // 是否有 time.Time 成员
+
 }
 
 var sqlTable SqlTable
@@ -239,8 +241,8 @@ func (s SqlTable) ToGoStruct() {
 
     // 输出字段
     for _, field := range s.Fields {
-        goType := mysqlType2GoType(field.FieldType, field.IsUnsigned)
         tag := getTag(field)
+        goType := mysqlType2GoType(field)
 
         // 前导 4 个空格
         if len(field.FieldComment) == 0 {
@@ -288,16 +290,16 @@ func getTag(field SqlTableField) string {
     return tag
 }
 
-func mysqlType2GoType(mysqlType string, isUnsigned bool) string {
-    switch mysqlType {
+func mysqlType2GoType(field SqlTableField) string {
+    switch field.FieldType {
     case "tinyint", "smallint", "mediumint", "int", "integer":
-        if !isUnsigned {
+        if !field.IsUnsigned {
             return "int32"
         } else {
             return "uint32"
         }
     case "bigint":
-        if !isUnsigned {
+        if !field.IsUnsigned {
             return "int64"
         } else {
             return "uint64"
