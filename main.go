@@ -76,6 +76,9 @@ func main() {
     // 创建一个扫描器，用于按行读取文件
     scanner := bufio.NewScanner(file)
 
+    // 标记是否在注释块中
+    inCommentBlock := false
+
     // 逐行读取文件
     for scanner.Scan() {
         // 读取一行文本
@@ -87,11 +90,41 @@ func main() {
         // 删除尾部的逗号
         line = strings.TrimSuffix(line, ",")
 
+        // 删除前后空格
+        line = strings.TrimSpace(line)
+
+        // 过滤掉空行
+        if len(line) == 0 {
+            continue
+        }
+
         // 删除指定字符
         line = strings.ReplaceAll(line, "`", "")
 
         // 全部转为小写，简化后续处理
         line = strings.ToLower(line)
+
+        // 结束注释了
+        if inCommentBlock {
+            if strings.HasPrefix(line, "*/") ||
+                strings.HasSuffix(line, "*/") {
+                inCommentBlock = false
+            }
+            continue
+        }
+
+        // 进入多行注释
+        if strings.HasPrefix(line, "/*") {
+            if !strings.HasSuffix(line, "*/") {
+                inCommentBlock = true // 如果 /* 同 */ 不在同一行则进入注释块状态中
+            }
+            continue
+        }
+
+        // 在注释中
+        if inCommentBlock {
+            continue
+        }
 
         // 需要过滤掉的
         if strings.HasPrefix(line, "key") ||
