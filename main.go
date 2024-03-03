@@ -281,30 +281,37 @@ func (s SqlTable) HaveTimeMember() bool {
 }
 
 func getTag(field SqlTableField) string {
+    var fieldName string
     var tag string
+    rawFieldName := field.RawFieldName
+
+    // 有字段前缀
+    if len(*fieldPrefix) > 0 {
+        fieldName = strings.TrimPrefix(rawFieldName, *fieldPrefix)
+    }
 
     if *withGorm {
-        tag = fmt.Sprintf("gorm:\"column:%s\"", field.RawFieldName)
+        tag = fmt.Sprintf("gorm:\"column:%s\"", rawFieldName)
     }
     if *withJson {
         if len(tag) == 0 {
-            tag = fmt.Sprintf("json:\"%s\"", field.FieldName)
+            tag = fmt.Sprintf("json:\"%s\"", fieldName)
         } else {
-            tag = fmt.Sprintf("%s json:\"%s\"", tag, field.FieldName)
+            tag = fmt.Sprintf("%s json:\"%s\"", tag, fieldName)
         }
     }
     if *withDb {
         if len(tag) == 0 {
-            tag = fmt.Sprintf("db:\"%s\"", field.RawFieldName)
+            tag = fmt.Sprintf("db:\"%s\"", rawFieldName)
         } else {
-            tag = fmt.Sprintf("%s db:\"%s\"", tag, field.RawFieldName)
+            tag = fmt.Sprintf("%s db:\"%s\"", tag, rawFieldName)
         }
     }
     if *withForm {
         if len(tag) == 0 {
-            tag = fmt.Sprintf("form:\"%s\"", field.FieldName)
+            tag = fmt.Sprintf("form:\"%s\"", fieldName)
         } else {
-            tag = fmt.Sprintf("%s form:\"%s\"", tag, field.FieldName)
+            tag = fmt.Sprintf("%s form:\"%s\"", tag, fieldName)
         }
     }
 
