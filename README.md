@@ -59,6 +59,7 @@ type Products struct {
 * 运行成功，程序退出码为 0，否则为非 0，Shell 中可通过"$?”的值来区分
 * 结果直接屏幕输出，可重定向到文件中
 * 通过重定向，可实现多个 SQL 文件对应一个 Go 代码文件
+* 默认不输出取表名函数，可通过参数"--with-tablename-func"开启
 
 ### Makefile 中应用示例
 
