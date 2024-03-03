@@ -12,10 +12,10 @@ import (
 )
 
 var (
-    help        = flag.Bool("h", false, "Display a help message and exit")
-    sql         = flag.String("sql", "", "SQL file containing \"CREATE TABLE\"")
-    tablePrefix = flag.String("tp", "t_", "Prefix of table name")
-    fieldPrefix = flag.String("fp", "f_", "Prefix of field name")
+    help        = flag.Bool("h", false, "Display a help message and exit.")
+    sql         = flag.String("sql", "", "SQL file containing \"CREATE TABLE\".")
+    tablePrefix = flag.String("tp", "t_", "Prefix of table name.")
+    fieldPrefix = flag.String("fp", "f_", "Prefix of field name.")
 )
 
 // SqlTableField 表字段
@@ -46,7 +46,7 @@ func main() {
         os.Exit(1)
     }
     if len(*sql) == 0 {
-        fmt.Printf("Parameter --sql is not set\n")
+        fmt.Printf("Parameter --sql is not set.\n")
         usage()
         os.Exit(2)
     }
@@ -97,6 +97,7 @@ func main() {
 }
 
 func usage() {
+    fmt.Println("A tool to convert table creation sql into go struct, TAB is not supported, only spaces are supported.")
     flag.Usage()
 }
 
@@ -144,7 +145,7 @@ func parseCreateTable(line string) bool {
         //fmt.Printf("Table name: %s\n", sqlTable.TableName)
         return true
     } else {
-        fmt.Printf("No table name found: %s\n", line)
+        fmt.Printf("No table name found: %s.\n", line)
         return false
     }
 }
