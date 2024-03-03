@@ -8,6 +8,7 @@ import (
     "os"
     "regexp"
     "strings"
+    "unicode"
 )
 
 var (
@@ -87,7 +88,16 @@ func parseCreateTable(line string) bool {
 
     // 如果找到匹配项，则输出表名
     if len(matches) > 1 {
-        fmt.Printf("Table name: %s\n", matches[1])
+        // 得到可能含前缀的表名
+        tableName := matches[1]
+
+        // 去掉字符串指定的前缀部分
+        if len(*tablePrefix) > 0 {
+            tableName = strings.TrimPrefix(tableName, *tablePrefix)
+        }
+
+        tableName = toStructName(tableName)
+        fmt.Printf("Table name: %s\n", tableName)
         return true
     } else {
         fmt.Printf("No table name found: %s\n", line)
@@ -97,4 +107,19 @@ func parseCreateTable(line string) bool {
 
 func parseNonCreateTable(line string) bool {
     return true
+}
+
+// toStructName 将"err_code"转为"ErrCode"
+func toStructName(name string) string {
+    var result []rune
+    for i, v := range name {
+        if i == 0 || name[i-1] == '_' {
+            result = append(result, unicode.ToUpper(v))
+        } else {
+            result = append(result, v)
+        }
+    }
+
+    // 将结果转换为字符串并去掉所有的"_"
+    return strings.ReplaceAll(string(result), "_", "")
 }
