@@ -159,7 +159,13 @@ func parseNonCreateTable(line string) bool {
     re = regexp.MustCompile(`(\w+)\s+(\w+)`)
     matches = re.FindStringSubmatch(line)
     if len(matches) > 2 {
-        sqlTableField.FieldName = toStructName(matches[1])
+        // 删除字段前缀
+        if len(*fieldPrefix) > 0 {
+            sqlTableField.FieldName = strings.TrimPrefix(matches[1], *fieldPrefix)
+        } else {
+            sqlTableField.FieldName = matches[1]
+        }
+        sqlTableField.FieldName = toStructName(sqlTableField.FieldName)
         sqlTableField.FieldType = matches[2]
     }
 
