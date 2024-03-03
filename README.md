@@ -6,6 +6,14 @@
 
 在 github 中找到一些 sql2struct，但要么是 chrome 插件，要么是在线工具，要么是需要连接 MySQL，不是很方便。本 sql2struct 根据 SQL 文件中的建表语句来生成 Go 的 struct，可集成到 Makefile 等中，方便使用。
 
+### 安装方法
+
+```shell
+go install https://github.com/eyjian/sql2struct@latest
+```
+
+执行成功后，在 $GOPATH/bin 目录下可找到 sql2struct 。
+
 ### 使用示例
 
 ```shell
