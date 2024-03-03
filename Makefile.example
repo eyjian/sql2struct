@@ -6,7 +6,7 @@ sql:
 	rm -f example.go
 
 sql-01: example-01.sql
-	sql2struct -sf=$< -package="main" >> example.go
+	sql2struct -sf=$< -package="main" -with-tablename-func=true >> example.go
 
 sql-02: example-02.sql
 	echo "" >> example.go&&sql2struct -sf=$< -with-tablename-func=true >> example.go
