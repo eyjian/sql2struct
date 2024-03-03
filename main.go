@@ -26,6 +26,10 @@ type SqlTableField struct {
     IsUnsigned   bool   // 是否为无符号类型
 }
 
+func (s SqlTableField) Print() {
+    fmt.Printf("FieldName:%s, FieldType:%s, FieldComment:%s, IsUnsigned:%v\n", s.FieldName, s.FieldType, s.FieldComment, s.IsUnsigned)
+}
+
 // SqlTable 表
 type SqlTable struct {
     TableComment string          // 表的注释
@@ -77,8 +81,11 @@ func usage() {
 }
 
 func parseLine(line string) bool {
+    // 删除前后空格
+    newLine := strings.TrimSpace(line)
+
     // 全部转为小写，简化后续处理
-    lowerLine := strings.ToLower(line)
+    lowerLine := strings.ToLower(newLine)
 
     // 替换多个连续的空格为一个空格
     re := regexp.MustCompile(`\s+`)
@@ -95,13 +102,13 @@ func parseLine(line string) bool {
 
 func parseCreateTable(line string) bool {
     // 去除可能存在的"-- 创建"部分
-    line = strings.Split(line, "--")[0]
+    newLine := strings.Split(line, "--")[0]
 
     // 创建正则表达式，用于匹配 "CREATE TABLE" 后的表名
     re := regexp.MustCompile(`create\s+table\s+(\w+)`)
 
     // 在输入字符串中查找匹配项
-    matches := re.FindStringSubmatch(line)
+    matches := re.FindStringSubmatch(newLine)
 
     // 如果找到匹配项，则输出表名
     if len(matches) > 1 {
@@ -123,6 +130,19 @@ func parseCreateTable(line string) bool {
 }
 
 func parseNonCreateTable(line string) bool {
+    var sqlTableField SqlTableField
+
+    // 使用正则表达式匹配字符串
+    re := regexp.MustCompile(`\s*` + "`" + `(\w+)` + "`" + `\s+(\w+).*'(.+)'`)
+    matches := re.FindStringSubmatch(line)
+    if len(matches) > 2 {
+        sqlTableField.FieldName = matches[1]
+        sqlTableField.FieldType = matches[2]
+    } else if len(matches) > 3 {
+        sqlTableField.FieldComment = matches[2]
+    }
+    sqlTableField.Print()
+
     return true
 }
 
