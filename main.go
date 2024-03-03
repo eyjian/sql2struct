@@ -66,8 +66,28 @@ func main() {
         // 读取一行文本
         line := scanner.Text()
 
+        // 删除前后空格
+        line = strings.TrimSpace(line)
+
+        // 删除尾部的逗号
+        line = strings.TrimSuffix(line, ",")
+
         // 删除指定字符
         line = strings.ReplaceAll(line, "`", "")
+
+        // 全部转为小写，简化后续处理
+        line = strings.ToLower(line)
+
+        if strings.HasPrefix(line, "key") ||
+            strings.HasPrefix(line, "index") ||
+            strings.HasPrefix(line, "primary") ||
+            strings.HasPrefix(line, "unique") ||
+            strings.HasPrefix(line, "(") ||
+            strings.HasPrefix(line, ")") ||
+            strings.HasPrefix(line, "--") ||
+            strings.HasPrefix(line, "drop") {
+            continue
+        }
 
         // 解析文本行
         if !parseLine(line) {
@@ -81,24 +101,15 @@ func usage() {
 }
 
 func parseLine(line string) bool {
-    // 删除前后空格
-    newLine := strings.TrimSpace(line)
-
-    // 删除尾部的逗号
-    newLine = strings.TrimSuffix(newLine, ",")
-
-    // 全部转为小写，简化后续处理
-    lowerLine := strings.ToLower(newLine)
-
     // 替换多个连续的空格为一个空格
     re := regexp.MustCompile(`\s+`)
-    lowerLine = re.ReplaceAllString(lowerLine, " ")
+    line = re.ReplaceAllString(line, " ")
 
     // 检查是否包含 "create table"
-    if strings.Contains(lowerLine, "create table") {
-        return parseCreateTable(lowerLine)
+    if strings.Contains(line, "create table") {
+        return parseCreateTable(line)
     } else {
-        return parseNonCreateTable(lowerLine)
+        return parseNonCreateTable(line)
     }
     return false
 }
