@@ -100,7 +100,12 @@ func main() {
             strings.HasPrefix(line, "(") ||
             strings.HasPrefix(line, ")") ||
             strings.HasPrefix(line, "--") ||
-            strings.HasPrefix(line, "drop") {
+            strings.HasPrefix(line, "drop") ||
+            strings.HasPrefix(line, "partition") ||
+            strings.Contains(line, "engine=") ||
+            strings.Contains(line, "auto_increment=") ||
+            strings.Contains(line, "charset=") ||
+            strings.Contains(line, "partition ") {
             continue
         }
 
