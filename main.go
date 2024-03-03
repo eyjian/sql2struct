@@ -94,6 +94,10 @@ func main() {
             break
         }
     }
+
+    if len(sqlTable.TableName) > 0 && len(sqlTable.Fields) > 0 {
+        sqlTable.ToGoStruct()
+    }
 }
 
 func usage() {
@@ -180,6 +184,7 @@ func parseNonCreateTable(line string) bool {
     }
 
     //sqlTableField.Print()
+    sqlTable.Fields = append(sqlTable.Fields, sqlTableField)
     return true
 }
 
@@ -196,4 +201,27 @@ func toStructName(name string) string {
 
     // 将结果转换为字符串并去掉所有的"_"
     return strings.ReplaceAll(string(result), "_", "")
+}
+
+func (s SqlTable) ToGoStruct() {
+    // 存在表注释
+    if len(s.TableComment) > 0 {
+        fmt.Printf("// %s %s\n", s.TableName, s.TableComment)
+    }
+
+    // 输出表名
+    fmt.Printf("type %s struct {\n", s.TableName)
+
+    // 输出字段
+    for _, field := range s.Fields {
+        // 前导 4 个空格
+        if len(field.FieldComment) == 0 {
+            fmt.Printf("    %s %s\n", field.FieldName, field.FieldType)
+        } else {
+            fmt.Printf("    %s %s // %s\n", field.FieldName, field.FieldType, field.FieldComment)
+        }
+    }
+
+    // 输出结束
+    fmt.Printf("}\n")
 }
