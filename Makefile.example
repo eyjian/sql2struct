@@ -1,0 +1,12 @@
+all: sql sql-01 sql-02
+
+.PHONY: sql
+
+sql:
+	rm -f test.go
+
+sql-01: example-01.sql
+	sql2struct -sf=$< --package="main" >> test.go
+
+sql-02: example-02.sql
+	sql2struct -sf=$< >> test.go

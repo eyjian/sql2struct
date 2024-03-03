@@ -2,10 +2,14 @@
 
 一个根据"CREATE TABLE"建表语句生成对应的Go语言结构体的工具，暂只支持 MySQL 表。
 
+### 开发目的
+
+在 github 中找到一些 sql2struct，但要么是 chrome 插件，要么是在线工具，要么是需要连接 MySQL，不是很方便。本 sql2struct 根据 SQL 文件中的建表语句来生成 Go 的 struct，可集成到 Makefile 等中，方便使用。
+
 ### 使用示例
 
 ```shell
-yijian@MacBook-Pro-16 sql2struct % cat example-01.sql 
+yijian@MacBook-Pro-16 sql2struct % cat example-01.sql
 DROP TABLE t_products;
 CREATE TABLE t_products (
                           f_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '商品ID',
@@ -55,3 +59,21 @@ type Products struct {
 * 运行成功，程序退出码为 0，否则为非 0，Shell 中可通过"$?”的值来区分
 * 结果直接屏幕输出，可重定向到文件中
 * 通过重定向，可实现多个 SQL 文件对应一个 Go 代码文件
+
+### Makefile 中应用示例
+
+```shell
+yijian@MacBook-Pro-16 sql2struct % cat Makefile.example
+all: sql sql-01 sql-02
+
+.PHONY: sql
+
+sql:
+	rm -f test.go
+
+sql-01: example-01.sql
+	sql2struct -sf=$< --package="main" >> test.go
+
+sql-02: example-02.sql
+	sql2struct -sf=$< >> test.go
+```
