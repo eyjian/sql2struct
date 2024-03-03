@@ -93,6 +93,7 @@ func main() {
         // 全部转为小写，简化后续处理
         line = strings.ToLower(line)
 
+        // 需要过滤掉的
         if strings.HasPrefix(line, "key") ||
             strings.HasPrefix(line, "index") ||
             strings.HasPrefix(line, "primary") ||
