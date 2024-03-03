@@ -167,6 +167,9 @@ func parseNonCreateTable(line string) bool {
         }
         sqlTableField.FieldName = toStructName(sqlTableField.FieldName)
         sqlTableField.FieldType = matches[2]
+
+        // 是否存在 unsigned
+        sqlTableField.IsUnsigned = strings.Contains(line, " unsigned ")
     }
 
     sqlTableField.Print()
