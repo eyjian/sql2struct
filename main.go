@@ -145,17 +145,24 @@ func parseCreateTable(line string) bool {
 
 func parseNonCreateTable(line string) bool {
     var sqlTableField SqlTableField
-    fmt.Println(line)
+    //fmt.Println(line)
 
-    // 使用正则表达式匹配字符串
-    re := regexp.MustCompile(`\s*` + "`" + `(\w+)` + "`" + `\s+(\w+).*'(.+)'`)
+    // 取得字段的注释
+    re := regexp.MustCompile(`comment\s+'(.+)'`)
     matches := re.FindStringSubmatch(line)
-    if len(matches) > 2 {
-        sqlTableField.FieldName = matches[1]
-        sqlTableField.FieldType = matches[2]
-    } else if len(matches) > 3 {
-        sqlTableField.FieldComment = matches[2]
+    if len(matches) > 1 {
+        sqlTableField.FieldComment = matches[1]
     }
+
+    // 取得字段名和字段类型
+    // 使用正则表达式匹配字符串
+    re = regexp.MustCompile(`(\w+)\s+(\w+)`)
+    matches = re.FindStringSubmatch(line)
+    if len(matches) > 2 {
+        sqlTableField.FieldName = toStructName(matches[1])
+        sqlTableField.FieldType = matches[2]
+    }
+
     sqlTableField.Print()
 
     return true
