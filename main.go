@@ -18,6 +18,23 @@ var (
     fieldPrefix = flag.String("fp", "f_", "Prefix of field name")
 )
 
+// SqlTableField 表字段
+type SqlTableField struct {
+    FieldName    string // 字段名
+    FieldType    string // 字段类型
+    FieldComment string // 字段的注释
+    IsUnsigned   bool   // 是否为无符号类型
+}
+
+// SqlTable 表
+type SqlTable struct {
+    TableComment string          // 表的注释
+    TableName    string          // 表名
+    Fields       []SqlTableField // 字段列表
+}
+
+var sqlTable SqlTable
+
 func main() {
     flag.Parse()
     if *help {
@@ -96,8 +113,8 @@ func parseCreateTable(line string) bool {
             tableName = strings.TrimPrefix(tableName, *tablePrefix)
         }
 
-        tableName = toStructName(tableName)
-        fmt.Printf("Table name: %s\n", tableName)
+        sqlTable.TableName = toStructName(tableName)
+        fmt.Printf("Table name: %s\n", sqlTable.TableName)
         return true
     } else {
         fmt.Printf("No table name found: %s\n", line)
