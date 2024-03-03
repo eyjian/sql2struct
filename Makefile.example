@@ -1,4 +1,4 @@
-all: sql sql-01 sql-02
+all: sql sql-01 sql-02 sql-03
 
 .PHONY: sql
 
@@ -9,4 +9,7 @@ sql-01: example-01.sql
 	sql2struct -sf=$< --package="main" >> test.go
 
 sql-02: example-02.sql
-	sql2struct -sf=$< >> test.go
+	echo "" >> test.go&&sql2struct -sf=$< --with-tablename-func=true >> test.go
+
+sql-03: example-03.sql
+	echo "" >> test.go&&sql2struct -sf=$< >> test.go
