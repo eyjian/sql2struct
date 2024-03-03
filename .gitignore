@@ -22,3 +22,4 @@ go.work
 
 .idea
 sql2struct
+test.go
