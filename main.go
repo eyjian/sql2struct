@@ -115,6 +115,12 @@ func parseLine(line string) bool {
 }
 
 func parseCreateTable(line string) bool {
+    // 使用字符串分割函数
+    parts := strings.Split(line, "--")
+    if len(parts) > 1 {
+        sqlTable.TableComment = strings.TrimSpace(parts[1])
+    }
+
     // 去除可能存在的"-- 创建"部分
     newLine := strings.Split(line, "--")[0]
 
@@ -135,7 +141,7 @@ func parseCreateTable(line string) bool {
         }
 
         sqlTable.TableName = toStructName(tableName)
-        fmt.Printf("Table name: %s\n", sqlTable.TableName)
+        //fmt.Printf("Table name: %s\n", sqlTable.TableName)
         return true
     } else {
         fmt.Printf("No table name found: %s\n", line)
@@ -172,8 +178,7 @@ func parseNonCreateTable(line string) bool {
         sqlTableField.IsUnsigned = strings.Contains(line, " unsigned ")
     }
 
-    sqlTableField.Print()
-
+    //sqlTableField.Print()
     return true
 }
 
