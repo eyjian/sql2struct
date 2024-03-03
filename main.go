@@ -84,6 +84,9 @@ func parseLine(line string) bool {
     // 删除前后空格
     newLine := strings.TrimSpace(line)
 
+    // 删除尾部的逗号
+    newLine = strings.TrimSuffix(newLine, ",")
+
     // 全部转为小写，简化后续处理
     lowerLine := strings.ToLower(newLine)
 
@@ -131,6 +134,7 @@ func parseCreateTable(line string) bool {
 
 func parseNonCreateTable(line string) bool {
     var sqlTableField SqlTableField
+    fmt.Println(line)
 
     // 使用正则表达式匹配字符串
     re := regexp.MustCompile(`\s*` + "`" + `(\w+)` + "`" + `\s+(\w+).*'(.+)'`)
