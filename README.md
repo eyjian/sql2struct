@@ -80,16 +80,19 @@ type Products struct {
 
 ```shell
 sql2struct % cat Makefile.example
-all: sql sql-01 sql-02
+all: sql sql-01 sql-02 sql-03
 
 .PHONY: sql
 
 sql:
-	rm -f test.go
+	rm -f example.go
 
 sql-01: example-01.sql
-	sql2struct -sf=$< --package="main" >> test.go
+	sql2struct -sf=$< -package="main" -with-tablename-func=true >> example.go
 
 sql-02: example-02.sql
-	sql2struct -sf=$< >> test.go
+	echo "" >> example.go&&sql2struct -sf=$< -with-tablename-func=true >> example.go
+
+sql-03: example-03.sql
+	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true >> example.go
 ```
