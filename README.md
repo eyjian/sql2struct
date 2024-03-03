@@ -12,7 +12,12 @@
 go install https://github.com/eyjian/sql2struct@latest
 ```
 
-执行成功后，在 $GOPATH/bin 目录下可找到 sql2struct 。
+执行成功后，在 $GOPATH/bin 目录下可找到 sql2struct：
+
+```shell
+# file `go env GOPATH`/bin/sql2struct
+/root/go/bin/sql2struct: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, not stripped
+```
 
 ### 使用示例
 
