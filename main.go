@@ -12,8 +12,11 @@ import (
     "unicode"
 )
 
+const Version string = "0.0.1"
+
 var (
-    help = flag.Bool("h", false, "Display a help message and exit.")
+    help    = flag.Bool("h", false, "Display a help message and exit.")
+    version = flag.Bool("v", false, "Display version info and exit.")
 
     sqlFile     = flag.String("sf", "", "SQL file containing \"CREATE TABLE\".")
     packageName = flag.String("package", "", "Package name.")
@@ -57,7 +60,11 @@ var sqlTable SqlTable
 func main() {
     flag.Parse()
     if *help {
-        usage()
+        showUsage()
+        os.Exit(1)
+    }
+    if *version {
+        showVersion()
         os.Exit(1)
     }
     if len(*sqlFile) == 0 {
@@ -156,9 +163,13 @@ func main() {
     os.Exit(0)
 }
 
-func usage() {
+func showUsage() {
     fmt.Fprintln(os.Stderr, "A tool to convert table creation SQL into Go struct, TAB is not supported in SQL file, only spaces are supported.")
     flag.Usage()
+}
+
+func showVersion() {
+    fmt.Printf("Version: %s, build\n", Version)
 }
 
 func parseLine(line string) bool {
