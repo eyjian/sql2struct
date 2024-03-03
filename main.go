@@ -255,6 +255,11 @@ func (s SqlTable) ToGoStruct() {
         tag := getTag(field)
         goType := mysqlType2GoType(field)
 
+        // 过滤掉
+        if goType == "any" {
+            continue
+        }
+
         // 前导 4 个空格
         if len(field.FieldComment) == 0 {
             fmt.Printf("    %s %s%s\n", field.FieldName, goType, tag)
