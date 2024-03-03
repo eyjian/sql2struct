@@ -257,13 +257,13 @@ func (s SqlTable) ToGoStruct() {
     }
 
     // 输出结束
-    fmt.Printf("}\n\n")
+    fmt.Printf("}\n")
 
     // 输出表名函数
     if *withTableNameFunc {
         firstChar := []rune(s.TableName)[0]
         firstChar = unicode.ToLower(firstChar)
-        fmt.Printf("func (%c *%s) GetTableNameOf%s() string {\n", firstChar, s.TableName, s.TableName)
+        fmt.Printf("\nfunc (%c *%s) GetTableNameOf%s() string {\n", firstChar, s.TableName, s.TableName)
         fmt.Printf("    return \"%s\"\n", s.RawTableName)
         // 输出结束
         fmt.Printf("}\n")
