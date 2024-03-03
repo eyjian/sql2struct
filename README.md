@@ -9,7 +9,7 @@
 ### 安装方法
 
 ```shell
-go install https://github.com/eyjian/sql2struct@latest
+go install github.com/eyjian/sql2struct@latest
 ```
 
 执行成功后，在 $GOPATH/bin 目录下可找到 sql2struct：
@@ -95,4 +95,36 @@ sql-02: example-02.sql
 
 sql-03: example-03.sql
 	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true >> example.go
+```
+
+### 使用帮助
+
+```shell
+% ./sql2struct -h
+A tool to convert table creation SQL into Go struct, TAB is not supported in SQL file, only spaces are supported.
+Usage of ./sql2struct:
+  -db
+        With db tag. (default true)
+  -form
+        With form tag. (default true)
+  -form-with-prefix
+        Whether from tag retains prefix of field name.
+  -fp string
+        Prefix of field name. (default "f_")
+  -gorm
+        With gorm tag. (default true)
+  -h    Display a help message and exit.
+  -json
+        With json tag. (default true)
+  -json-with-prefix
+        Whether json tag retains prefix of field name.
+  -package string
+        Package name.
+  -sf string
+        SQL file containing "CREATE TABLE".
+  -tp string
+        Prefix of table name. (default "t_")
+  -v    Display version info and exit.
+  -with-tablename-func
+        Generate a function that takes the table name.
 ```
