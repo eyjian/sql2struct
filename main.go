@@ -20,6 +20,7 @@ var (
 
 // SqlTableField 表字段
 type SqlTableField struct {
+    RawFieldName string // 未处理的原始字段名
     FieldName    string // 字段名
     FieldType    string // 字段类型
     FieldComment string // 字段的注释
@@ -32,8 +33,9 @@ func (s SqlTableField) Print() {
 
 // SqlTable 表
 type SqlTable struct {
-    TableComment string          // 表的注释
+    RawTableName string          // 原始表名
     TableName    string          // 表名
+    TableComment string          // 表的注释
     Fields       []SqlTableField // 字段列表
 }
 
@@ -139,6 +141,7 @@ func parseCreateTable(line string) bool {
     if len(matches) > 1 {
         // 得到可能含前缀的表名
         tableName := matches[1]
+        sqlTable.RawTableName = tableName
 
         // 去掉字符串指定的前缀部分
         if len(*tablePrefix) > 0 {
@@ -170,14 +173,16 @@ func parseNonCreateTable(line string) bool {
     re = regexp.MustCompile(`(\w+)\s+(\w+)`)
     matches = re.FindStringSubmatch(line)
     if len(matches) > 2 {
+        sqlTableField.RawFieldName = matches[1]
+        sqlTableField.FieldType = matches[2]
+
         // 删除字段前缀
         if len(*fieldPrefix) > 0 {
-            sqlTableField.FieldName = strings.TrimPrefix(matches[1], *fieldPrefix)
+            sqlTableField.FieldName = strings.TrimPrefix(sqlTableField.RawFieldName, *fieldPrefix)
         } else {
-            sqlTableField.FieldName = matches[1]
+            sqlTableField.FieldName = sqlTableField.RawFieldName
         }
         sqlTableField.FieldName = toStructName(sqlTableField.FieldName)
-        sqlTableField.FieldType = matches[2]
 
         // 是否存在 unsigned
         sqlTableField.IsUnsigned = strings.Contains(line, " unsigned ")
