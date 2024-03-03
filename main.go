@@ -21,10 +21,10 @@ var (
     tablePrefix = flag.String("tp", "t_", "Prefix of table name.")
     fieldPrefix = flag.String("fp", "f_", "Prefix of field name.")
 
-    withGorm = flag.Bool("gorm", true, "With gorm.")
-    withJson = flag.Bool("json", true, "With json.")
-    withDb   = flag.Bool("db", true, "With db.")
-    withForm = flag.Bool("form", true, "With form.")
+    withGorm = flag.Bool("gorm", true, "With gorm tag.")
+    withJson = flag.Bool("json", true, "With json tag.")
+    withDb   = flag.Bool("db", true, "With db tag.")
+    withForm = flag.Bool("form", true, "With form tag.")
 
     withTableNameFunc = flag.Bool("with-tablename-func", false, "Generate a function that takes the table name.")
 )
@@ -60,7 +60,6 @@ func main() {
     }
     if len(*sqlFile) == 0 {
         fmt.Fprintf(os.Stderr, "Parameter --sf is not set.\n")
-        usage()
         os.Exit(2)
     }
 
