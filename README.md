@@ -74,6 +74,7 @@ type Products struct {
 * 结果直接屏幕输出，可重定向到文件中
 * 通过重定向，可实现多个 SQL 文件对应一个 Go 代码文件
 * 默认不输出取表名函数，可通过参数"--with-tablename-func"开启
+* 默认 json 和 form 两种 tag 会去掉字段名的前缀部分，但可通过命令行参数"-json-with-prefix”和"-form-with-prefix"分别控制
 
 ### Makefile 中应用示例
 
