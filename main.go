@@ -13,8 +13,9 @@ import (
 )
 
 var (
-    help        = flag.Bool("h", false, "Display a help message and exit.")
-    sql         = flag.String("sql", "", "SQL file containing \"CREATE TABLE\".")
+    help = flag.Bool("h", false, "Display a help message and exit.")
+
+    sqlFile     = flag.String("sf", "", "SQL file containing \"CREATE TABLE\".")
     tablePrefix = flag.String("tp", "t_", "Prefix of table name.")
     fieldPrefix = flag.String("fp", "f_", "Prefix of field name.")
 
@@ -53,14 +54,14 @@ func main() {
         usage()
         os.Exit(1)
     }
-    if len(*sql) == 0 {
-        fmt.Printf("Parameter --sql is not set.\n")
+    if len(*sqlFile) == 0 {
+        fmt.Printf("Parameter --sf is not set.\n")
         usage()
         os.Exit(2)
     }
 
     // 打开文件
-    file, err := os.Open(*sql)
+    file, err := os.Open(*sqlFile)
     if err != nil {
         panic(err)
     }
