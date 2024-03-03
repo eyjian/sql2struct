@@ -214,14 +214,49 @@ func (s SqlTable) ToGoStruct() {
 
     // 输出字段
     for _, field := range s.Fields {
+        goType := mysqlType2GoType(field.FieldType, field.IsUnsigned)
+
         // 前导 4 个空格
         if len(field.FieldComment) == 0 {
-            fmt.Printf("    %s %s\n", field.FieldName, field.FieldType)
+            fmt.Printf("    %s %s\n", field.FieldName, goType)
         } else {
-            fmt.Printf("    %s %s // %s\n", field.FieldName, field.FieldType, field.FieldComment)
+            fmt.Printf("    %s %s // %s\n", field.FieldName, goType, field.FieldComment)
         }
     }
 
     // 输出结束
     fmt.Printf("}\n")
+}
+
+func mysqlType2GoType(mysqlType string, isUnsigned bool) string {
+    switch mysqlType {
+    case "tinyint", "smallint", "mediumint", "int", "integer":
+        if !isUnsigned {
+            return "int32"
+        } else {
+            return "uint32"
+        }
+    case "bigint":
+        if !isUnsigned {
+            return "int64"
+        } else {
+            return "uint64"
+        }
+    case "float":
+        return "float32"
+    case "double", "decimal":
+        return "float64"
+    case "char", "varchar", "tinytext", "text", "mediumtext", "longtext":
+        return "string"
+    case "date", "datetime", "timestamp", "time":
+        return "time.Time"
+    case "tinyblob", "blob", "mediumblob", "longblob", "binary", "varbinary":
+        return "[]byte"
+    case "bit":
+        return "bool"
+    case "enum", "set":
+        return "string"
+    default:
+        return "any"
+    }
 }
