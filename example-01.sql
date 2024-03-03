@@ -1,5 +1,5 @@
-DROP TABLE t_products01;
-CREATE TABLE t_products01 (
+DROP TABLE t_products;
+CREATE TABLE t_products (
                           f_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '商品ID',
                           f_name VARCHAR(255) NOT NULL COMMENT '商品名称',
                           f_description TEXT,

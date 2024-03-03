@@ -1,5 +1,5 @@
-DROP TABLE products02;
-CREATE TABLE products02 ( -- 商品表
+DROP TABLE goods;
+CREATE TABLE goods ( -- 商品表
                           id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '商品ID',
                           name VARCHAR(255) NOT NULL UNIQUE COMMENT '商品名称',
                           description TEXT COMMENT '商品描述',
