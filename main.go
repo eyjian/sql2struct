@@ -55,7 +55,7 @@ func main() {
         os.Exit(1)
     }
     if len(*sqlFile) == 0 {
-        fmt.Printf("Parameter --sf is not set.\n")
+        fmt.Fprintf(os.Stderr, "Parameter --sf is not set.\n")
         usage()
         os.Exit(2)
     }
@@ -63,7 +63,8 @@ func main() {
     // 打开文件
     file, err := os.Open(*sqlFile)
     if err != nil {
-        panic(err)
+        fmt.Fprintf(os.Stderr, "Open %s error: %s.\n", *sqlFile, err.Error())
+        os.Exit(3)
     }
     defer file.Close()
 
@@ -100,17 +101,19 @@ func main() {
 
         // 解析文本行
         if !parseLine(line) {
-            break
+            os.Exit(4)
         }
     }
 
     if len(sqlTable.TableName) > 0 && len(sqlTable.Fields) > 0 {
         sqlTable.ToGoStruct()
     }
+
+    os.Exit(0)
 }
 
 func usage() {
-    fmt.Println("A tool to convert table creation sql into go struct, TAB is not supported, only spaces are supported.")
+    fmt.Fprintln(os.Stderr, "A tool to convert table creation SQL into Go struct, TAB is not supported in SQL file, only spaces are supported.")
     flag.Usage()
 }
 
@@ -125,7 +128,6 @@ func parseLine(line string) bool {
     } else {
         return parseNonCreateTable(line)
     }
-    return false
 }
 
 func parseCreateTable(line string) bool {
@@ -159,7 +161,7 @@ func parseCreateTable(line string) bool {
         //fmt.Printf("Table name: %s\n", sqlTable.TableName)
         return true
     } else {
-        fmt.Printf("No table name found: %s.\n", line)
+        fmt.Fprintf(os.Stderr, "No table name found: %s.\n", line)
         return false
     }
 }
