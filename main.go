@@ -27,6 +27,8 @@ var (
     withForm = flag.Bool("form", true, "With form tag.")
 
     withTableNameFunc = flag.Bool("with-tablename-func", false, "Generate a function that takes the table name.")
+    jsonWithPrefix    = flag.Bool("json-with-prefix", false, "Whether json tag retains prefix of field name.")
+    formWithPrefix    = flag.Bool("form-with-prefix", false, "Whether from tag retains prefix of field name.")
 )
 
 // SqlTableField 表字段
@@ -295,9 +297,17 @@ func getTag(field SqlTableField) string {
     }
     if *withJson {
         if len(tag) == 0 {
-            tag = fmt.Sprintf("json:\"%s\"", fieldName)
+            if *jsonWithPrefix {
+                tag = fmt.Sprintf("json:\"%s\"", rawFieldName)
+            } else {
+                tag = fmt.Sprintf("json:\"%s\"", fieldName)
+            }
         } else {
-            tag = fmt.Sprintf("%s json:\"%s\"", tag, fieldName)
+            if *jsonWithPrefix {
+                tag = fmt.Sprintf("%s json:\"%s\"", tag, rawFieldName)
+            } else {
+                tag = fmt.Sprintf("%s json:\"%s\"", tag, fieldName)
+            }
         }
     }
     if *withDb {
@@ -309,9 +319,17 @@ func getTag(field SqlTableField) string {
     }
     if *withForm {
         if len(tag) == 0 {
-            tag = fmt.Sprintf("form:\"%s\"", fieldName)
+            if *formWithPrefix {
+                tag = fmt.Sprintf("form:\"%s\"", rawFieldName)
+            } else {
+                tag = fmt.Sprintf("form:\"%s\"", fieldName)
+            }
         } else {
-            tag = fmt.Sprintf("%s form:\"%s\"", tag, fieldName)
+            if *formWithPrefix {
+                tag = fmt.Sprintf("%s form:\"%s\"", tag, rawFieldName)
+            } else {
+                tag = fmt.Sprintf("%s form:\"%s\"", tag, fieldName)
+            }
         }
     }
 
