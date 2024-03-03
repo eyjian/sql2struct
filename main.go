@@ -205,10 +205,11 @@ func parseNonCreateTable(line string) bool {
 
         // 是否存在 unsigned
         sqlTableField.IsUnsigned = strings.Contains(line, " unsigned ")
+
+        //sqlTableField.Print()
+        sqlTable.Fields = append(sqlTable.Fields, sqlTableField)
     }
 
-    //sqlTableField.Print()
-    sqlTable.Fields = append(sqlTable.Fields, sqlTableField)
     return true
 }
 
