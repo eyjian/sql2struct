@@ -169,7 +169,7 @@ func showUsage() {
 }
 
 func showVersion() {
-    fmt.Printf("Version: %s, build\n", Version)
+    fmt.Printf("Version: %s, build at %s\n", Version, time.Now().Format("2006-01-02 15:04:05"))
 }
 
 func parseLine(line string) bool {
