@@ -337,46 +337,17 @@ func getTag(field SqlTableField) string {
     }
 
     if *withGorm {
-        tag = fmt.Sprintf("gorm:\"column:%s\"", rawFieldName)
+        tag = getGormTag(rawFieldName)
     }
     if *withJson {
-        if len(tag) == 0 {
-            if *jsonWithPrefix {
-                tag = fmt.Sprintf("json:\"%s\"", rawFieldName)
-            } else {
-                tag = fmt.Sprintf("json:\"%s\"", fieldName)
-            }
-        } else {
-            if *jsonWithPrefix {
-                tag = fmt.Sprintf("%s json:\"%s\"", tag, rawFieldName)
-            } else {
-                tag = fmt.Sprintf("%s json:\"%s\"", tag, fieldName)
-            }
-        }
+        tag = getJsonTag(tag, rawFieldName, fieldName)
     }
     if *withDb {
-        if len(tag) == 0 {
-            tag = fmt.Sprintf("db:\"%s\"", rawFieldName)
-        } else {
-            tag = fmt.Sprintf("%s db:\"%s\"", tag, rawFieldName)
-        }
+        tag = getDbTag(tag, rawFieldName)
     }
     if *withForm {
-        if len(tag) == 0 {
-            if *formWithPrefix {
-                tag = fmt.Sprintf("form:\"%s\"", rawFieldName)
-            } else {
-                tag = fmt.Sprintf("form:\"%s\"", fieldName)
-            }
-        } else {
-            if *formWithPrefix {
-                tag = fmt.Sprintf("%s form:\"%s\"", tag, rawFieldName)
-            } else {
-                tag = fmt.Sprintf("%s form:\"%s\"", tag, fieldName)
-            }
-        }
+        tag = getFormTag(tag, rawFieldName, fieldName)
     }
-
     if len(tag) > 0 {
         tag = " `" + tag + "`"
     }
@@ -430,4 +401,59 @@ func skipLine(line string) bool {
         strings.Contains(line, "auto_increment=") ||
         strings.Contains(line, "charset=") ||
         strings.Contains(line, "partition ")
+}
+
+func getGormTag(rawFieldName string) string {
+    tag := fmt.Sprintf("gorm:\"column:%s\"", rawFieldName)
+    return tag
+}
+
+func getJsonTag(tag, rawFieldName, fieldName string) string {
+    var newTag string
+    if len(tag) == 0 {
+        if *jsonWithPrefix {
+            newTag = fmt.Sprintf("json:\"%s\"", rawFieldName)
+        } else {
+            newTag = fmt.Sprintf("json:\"%s\"", fieldName)
+        }
+    } else {
+        if *jsonWithPrefix {
+            newTag = fmt.Sprintf("%s json:\"%s\"", tag, rawFieldName)
+        } else {
+            newTag = fmt.Sprintf("%s json:\"%s\"", tag, fieldName)
+        }
+    }
+
+    return newTag
+}
+
+func getDbTag(tag, rawFieldName string) string {
+    var newTag string
+    if len(tag) == 0 {
+        newTag = fmt.Sprintf("db:\"%s\"", rawFieldName)
+    } else {
+        newTag = fmt.Sprintf("%s db:\"%s\"", tag, rawFieldName)
+    }
+
+    return newTag
+}
+
+func getFormTag(tag, rawFieldName, fieldName string) string {
+    var newTag string
+
+    if len(tag) == 0 {
+        if *formWithPrefix {
+            newTag = fmt.Sprintf("form:\"%s\"", rawFieldName)
+        } else {
+            newTag = fmt.Sprintf("form:\"%s\"", fieldName)
+        }
+    } else {
+        if *formWithPrefix {
+            newTag = fmt.Sprintf("%s form:\"%s\"", tag, rawFieldName)
+        } else {
+            newTag = fmt.Sprintf("%s form:\"%s\"", tag, fieldName)
+        }
+    }
+
+    return newTag
 }
