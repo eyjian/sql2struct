@@ -134,19 +134,7 @@ func main() {
         }
 
         // 需要过滤掉的
-        if strings.HasPrefix(line, "key") ||
-            strings.HasPrefix(line, "index") ||
-            strings.HasPrefix(line, "primary") ||
-            strings.HasPrefix(line, "unique") ||
-            strings.HasPrefix(line, "(") ||
-            strings.HasPrefix(line, ")") ||
-            strings.HasPrefix(line, "--") ||
-            strings.HasPrefix(line, "drop") ||
-            strings.HasPrefix(line, "partition") ||
-            strings.Contains(line, "engine=") ||
-            strings.Contains(line, "auto_increment=") ||
-            strings.Contains(line, "charset=") ||
-            strings.Contains(line, "partition ") {
+        if skipLine(line) {
             continue
         }
 
@@ -426,4 +414,20 @@ func mysqlType2GoType(field SqlTableField) string {
     default:
         return "any"
     }
+}
+
+func skipLine(line string) bool {
+    return strings.HasPrefix(line, "key") ||
+        strings.HasPrefix(line, "index") ||
+        strings.HasPrefix(line, "primary") ||
+        strings.HasPrefix(line, "unique") ||
+        strings.HasPrefix(line, "(") ||
+        strings.HasPrefix(line, ")") ||
+        strings.HasPrefix(line, "--") ||
+        strings.HasPrefix(line, "drop") ||
+        strings.HasPrefix(line, "partition") ||
+        strings.Contains(line, "engine=") ||
+        strings.Contains(line, "auto_increment=") ||
+        strings.Contains(line, "charset=") ||
+        strings.Contains(line, "partition ")
 }
