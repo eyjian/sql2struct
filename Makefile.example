@@ -12,4 +12,4 @@ sql-02: example-02.sql
 	echo "" >> example.go&&sql2struct -sf=$< -with-tablename-func=true -tags="sql" >> example.go
 
 sql-03: example-03.sql
-	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true -tags="sql,xorm" >> example.go
+	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true -tags="sql,-xorm" >> example.go

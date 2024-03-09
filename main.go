@@ -468,10 +468,24 @@ func getCustomTags(tag, rawFieldName, fieldName string) string {
     customTags := strings.Split(*tags, ",")
 
     for _, customTag := range customTags {
+        // 以"-"打头的表示使用去掉字段头的作为 tag
+        useFieldName := strings.HasPrefix(customTag, "-")
+        if useFieldName {
+            customTag = strings.TrimPrefix(customTag, "-")
+        }
+
         if len(newTag) == 0 {
-            newTag = fmt.Sprintf("%s:\"%s\"", customTag, rawFieldName)
+            if !useFieldName {
+                newTag = fmt.Sprintf("%s:\"%s\"", customTag, rawFieldName)
+            } else {
+                newTag = fmt.Sprintf("%s:\"%s\"", customTag, fieldName)
+            }
         } else {
-            newTag = fmt.Sprintf("%s %s:\"%s\"", newTag, customTag, rawFieldName)
+            if !useFieldName {
+                newTag = fmt.Sprintf("%s %s:\"%s\"", newTag, customTag, rawFieldName)
+            } else {
+                newTag = fmt.Sprintf("%s %s:\"%s\"", newTag, customTag, fieldName)
+            }
         }
     }
 
