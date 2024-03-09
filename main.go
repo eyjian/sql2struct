@@ -32,6 +32,8 @@ var (
     withTableNameFunc = flag.Bool("with-tablename-func", false, "Generate a function that takes the table name.")
     jsonWithPrefix    = flag.Bool("json-with-prefix", false, "Whether json tag retains prefix of field name.")
     formWithPrefix    = flag.Bool("form-with-prefix", false, "Whether from tag retains prefix of field name.")
+
+    tags = flag.String("tags", "", "Custom tags, separate multiple tags with commas.")
 )
 
 // SqlTableField 表字段
@@ -348,6 +350,9 @@ func getTag(field SqlTableField) string {
     if *withForm {
         tag = getFormTag(tag, rawFieldName, fieldName)
     }
+    if len(*tags) > 0 {
+        tag = getCustomTags(tag, rawFieldName, fieldName)
+    }
     if len(tag) > 0 {
         tag = " `" + tag + "`"
     }
@@ -452,6 +457,21 @@ func getFormTag(tag, rawFieldName, fieldName string) string {
             newTag = fmt.Sprintf("%s form:\"%s\"", tag, rawFieldName)
         } else {
             newTag = fmt.Sprintf("%s form:\"%s\"", tag, fieldName)
+        }
+    }
+
+    return newTag
+}
+
+func getCustomTags(tag, rawFieldName, fieldName string) string {
+    var newTag string = tag
+    customTags := strings.Split(*tags, ",")
+
+    for _, customTag := range customTags {
+        if len(newTag) == 0 {
+            newTag = fmt.Sprintf("%s:\"%s\"", customTag, rawFieldName)
+        } else {
+            newTag = fmt.Sprintf("%s %s:\"%s\"", newTag, customTag, rawFieldName)
         }
     }
 
