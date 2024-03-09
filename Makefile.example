@@ -9,7 +9,7 @@ sql-01: example-01.sql
 	sql2struct -sf=$< -package="main" -with-tablename-func=true >> example.go
 
 sql-02: example-02.sql
-	echo "" >> example.go&&sql2struct -sf=$< -with-tablename-func=true >> example.go
+	echo "" >> example.go&&sql2struct -sf=$< -with-tablename-func=true -tags="sql" >> example.go
 
 sql-03: example-03.sql
-	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true >> example.go
+	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true -tags="sql,xorm" >> example.go
