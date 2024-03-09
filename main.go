@@ -12,7 +12,7 @@ import (
     "unicode"
 )
 
-const Version string = "0.0.1"
+const Version string = "0.0.2"
 
 var (
     help    = flag.Bool("h", false, "Display a help message and exit.")
@@ -33,7 +33,7 @@ var (
     jsonWithPrefix    = flag.Bool("json-with-prefix", false, "Whether json tag retains prefix of field name.")
     formWithPrefix    = flag.Bool("form-with-prefix", false, "Whether from tag retains prefix of field name.")
 
-    tags = flag.String("tags", "", "Custom tags, separate multiple tags with commas.")
+    tags = flag.String("tags", "", "Custom tags, separate multiple tags with commas, example: -tags=\"sql,-xorm\".")
 )
 
 // SqlTableField 表字段

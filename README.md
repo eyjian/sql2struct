@@ -1,6 +1,6 @@
 ### sql2struct
 
-一个根据"CREATE TABLE"建表语句生成对应的Go语言结构体的工具，暂只支持 MySQL 表。
+一个根据"CREATE TABLE"建表语句生成对应的Go语言结构体的工具，暂只支持 MySQL 表。支持自定义的 tags，通过参数"-tags"指定，多个自定义的 tags 间使用逗号分开。如果自定义的 tags 值以横杠"-"打头，则表示使用去掉字段名前缀作为值，否则使用字段名作为值。
 
 ### 开发目的
 
@@ -79,7 +79,6 @@ type Products struct {
 ### Makefile 中应用示例
 
 ```shell
-sql2struct % cat Makefile.example
 all: sql sql-01 sql-02 sql-03
 
 .PHONY: sql
@@ -91,18 +90,18 @@ sql-01: example-01.sql
 	sql2struct -sf=$< -package="main" -with-tablename-func=true >> example.go
 
 sql-02: example-02.sql
-	echo "" >> example.go&&sql2struct -sf=$< -with-tablename-func=true >> example.go
+	echo "" >> example.go&&sql2struct -sf=$< -with-tablename-func=true -tags="sql" >> example.go
 
 sql-03: example-03.sql
-	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true >> example.go
+	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true -tags="sql,-xorm" >> example.go
 ```
 
 ### 使用帮助
 
 ```shell
-% ./sql2struct -h
+% sql2struct -h
 A tool to convert table creation SQL into Go struct, TAB is not supported in SQL file, only spaces are supported.
-Usage of ./sql2struct:
+Usage of sql2struct:
   -db
         With db tag. (default true)
   -form
@@ -122,6 +121,8 @@ Usage of ./sql2struct:
         Package name.
   -sf string
         SQL file containing "CREATE TABLE".
+  -tags string
+        Custom tags, separate multiple tags with commas.
   -tp string
         Prefix of table name. (default "t_")
   -v    Display version info and exit.
