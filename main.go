@@ -38,12 +38,13 @@ var (
 
 // SqlTableField 表字段
 type SqlTableField struct {
-    RawFieldName string // 未处理的原始字段名
-    FieldName    string // 字段名
-    FieldType    string // 字段类型
-    FieldComment string // 字段的注释
-    IsUnsigned   bool   // 是否为无符号类型
-    IsPrimaryKey bool   // 是否为主键
+    RawFieldName  string // 未处理的原始字段名
+    FieldName     string // 字段名
+    FieldType     string // 字段类型
+    FieldComment  string // 字段的注释
+    IsUnsigned    bool   // 是否为无符号类型
+    IsPrimaryKey  bool   // 是否为主键
+    AutoIncrement bool   // 是否为自增字段
 }
 
 func (s *SqlTableField) Print() {
@@ -232,6 +233,13 @@ func parseNonCreateTable(line string) bool {
         isPrimaryKey = true
     }
 
+    // 检查是否为自增主键
+    autoIncrement := false
+    fmt.Println("=======>", line)
+    if strings.Contains(line, "auto_increment") {
+        autoIncrement = true
+    }
+
     // 取得字段名和字段类型
     // 使用正则表达式匹配字符串
     re = regexp.MustCompile(`(\w+)\s+(\w+)`)
@@ -253,6 +261,7 @@ func parseNonCreateTable(line string) bool {
 
         //sqlTableField.Print()
         sqlTableField.IsPrimaryKey = isPrimaryKey
+        sqlTableField.AutoIncrement = autoIncrement
         sqlTable.Fields = append(sqlTable.Fields, &sqlTableField)
     }
 
@@ -369,7 +378,7 @@ func getTag(field *SqlTableField) string {
     }
 
     if *withGorm {
-        tag = getGormTag(rawFieldName, field.IsPrimaryKey)
+        tag = getGormTag(rawFieldName, field.IsPrimaryKey, field.AutoIncrement)
     }
     if *withJson {
         tag = getJsonTag(tag, rawFieldName, fieldName)
@@ -437,11 +446,19 @@ func skipLine(line string) bool {
         strings.Contains(line, "partition ")
 }
 
-func getGormTag(rawFieldName string, isPrimaryKey bool) string {
+func getGormTag(rawFieldName string, isPrimaryKey, autoIncrement bool) string {
     if !isPrimaryKey {
-        return fmt.Sprintf("gorm:\"column:%s\"", rawFieldName)
+        if !autoIncrement {
+            return fmt.Sprintf("gorm:\"column:%s\"", rawFieldName)
+        } else {
+            return fmt.Sprintf("gorm:\"column:%s;autoIncrement\"", rawFieldName)
+        }
     } else {
-        return fmt.Sprintf("gorm:\"column:%s;primaryKey\"", rawFieldName)
+        if !autoIncrement {
+            return fmt.Sprintf("gorm:\"column:%s;primaryKey\"", rawFieldName)
+        } else {
+            return fmt.Sprintf("gorm:\"column:%s;primaryKey;autoIncrement\"", rawFieldName)
+        }
     }
 }
 
