@@ -7,7 +7,7 @@ all: $(GO_FILES)
 .PHONY: clean
 
 %_gen.go: $(SQL_DIR)/%.sql
-	sql2struct -sf=$< -package="main" -with-tablename-func=true >> $@
+	sql2struct -sf=$< -package="main" -with-tablename-func=true > $@
 
 clean:
 	rm -f $(GO_FILES)
