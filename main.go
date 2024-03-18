@@ -12,7 +12,7 @@ import (
     "unicode"
 )
 
-const Version string = "0.0.4"
+const Version string = "0.0.5"
 
 var (
     help    = flag.Bool("h", false, "Display a help message and exit.")
