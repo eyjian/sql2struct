@@ -10,4 +10,8 @@ all: $(GO_FILES)
 	sql2struct -sf=$< -package="main" -with-tablename-func=true > $@
 
 clean:
+ifeq ($(OS),Windows_NT)
+	del /q $(GO_FILES)
+else
 	rm -f $(GO_FILES)
+endif
