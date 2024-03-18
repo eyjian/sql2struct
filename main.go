@@ -235,7 +235,6 @@ func parseNonCreateTable(line string) bool {
 
     // 检查是否为自增主键
     autoIncrement := false
-    fmt.Println("=======>", line)
     if strings.Contains(line, "auto_increment") {
         autoIncrement = true
     }
