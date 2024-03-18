@@ -1,4 +1,4 @@
-SQL_DIR:=.
+SQL_DIR := .
 SQL_FILES := $(wildcard $(SQL_DIR)/*.sql)
 GO_FILES := $(patsubst $(SQL_DIR)/%.sql,%_gen.go,$(SQL_FILES))
 
