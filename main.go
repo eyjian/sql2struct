@@ -45,6 +45,7 @@ type SqlTableField struct {
     IsUnsigned    bool   // 是否为无符号类型
     IsPrimaryKey  bool   // 是否为主键
     AutoIncrement bool   // 是否为自增字段
+    IsJsonField   bool   // 是否为json字段
 }
 
 func (s *SqlTableField) Print() {
@@ -247,6 +248,11 @@ func parseNonCreateTable(line string) bool {
         sqlTableField.RawFieldName = matches[1]
         sqlTableField.FieldType = matches[2]
 
+        isJsonField := false
+        if sqlTableField.FieldType == "json" {
+            isJsonField = true
+        }
+
         // 删除字段前缀
         if len(*fieldPrefix) > 0 {
             sqlTableField.FieldName = strings.TrimPrefix(sqlTableField.RawFieldName, *fieldPrefix)
@@ -261,6 +267,7 @@ func parseNonCreateTable(line string) bool {
         //sqlTableField.Print()
         sqlTableField.IsPrimaryKey = isPrimaryKey
         sqlTableField.AutoIncrement = autoIncrement
+        sqlTableField.IsJsonField = isJsonField
         sqlTable.Fields = append(sqlTable.Fields, &sqlTableField)
     }
 
@@ -377,7 +384,7 @@ func getTag(field *SqlTableField) string {
     }
 
     if *withGorm {
-        tag = getGormTag(rawFieldName, field.IsPrimaryKey, field.AutoIncrement)
+        tag = getGormTag(rawFieldName, field.IsPrimaryKey, field.AutoIncrement, field.IsJsonField)
     }
     if *withJson {
         tag = getJsonTag(tag, rawFieldName, fieldName)
@@ -415,7 +422,7 @@ func mysqlType2GoType(field *SqlTableField) string {
         return "float32"
     case "double", "decimal":
         return "float64"
-    case "char", "varchar", "tinytext", "text", "mediumtext", "longtext":
+    case "char", "varchar", "tinytext", "text", "mediumtext", "longtext", "json":
         return "string"
     case "date", "datetime", "timestamp", "time":
         return "time.Time"
@@ -445,7 +452,7 @@ func skipLine(line string) bool {
         strings.Contains(line, "partition ")
 }
 
-func getGormTag(rawFieldName string, isPrimaryKey, autoIncrement bool) string {
+func getGormTag(rawFieldName string, isPrimaryKey, autoIncrement, isJsonField bool) string {
     if !isPrimaryKey {
         if !autoIncrement {
             return fmt.Sprintf("gorm:\"column:%s\"", rawFieldName)
