@@ -13,12 +13,14 @@ import (
 
 // SqlTableField 表字段
 type SqlTableField struct {
-	RawFieldName string // 未处理的原始字段名
-	FieldName    string // 字段名
-	FieldType    string // 字段类型
-	FieldComment string // 字段的注释
-	IsUnsigned   bool   // 是否为无符号类型
-	IsPrimaryKey bool   // 是否为主键
+	RawFieldName  string // 未处理的原始字段名
+	FieldName     string // 字段名
+	FieldType     string // 字段类型
+	FieldComment  string // 字段的注释
+	IsUnsigned    bool   // 是否为无符号类型
+	IsPrimaryKey  bool   // 是否为主键
+	AutoIncrement bool   // 是否为自增字段
+	IsJsonField   bool   // 是否为json字段
 }
 
 func (s *SqlTableField) Print() {
@@ -190,6 +192,12 @@ func (s *SqlTable) parseNonCreateTable(line string) error {
 		isPrimaryKey = true
 	}
 
+	// 检查是否为自增主键
+	sqlTableField.AutoIncrement = false
+	if strings.Contains(line, "auto_increment") {
+		sqlTableField.AutoIncrement = true
+	}
+
 	// 取得字段名和字段类型
 	// 使用正则表达式匹配字符串
 	re = regexp.MustCompile(`(\w+)\s+(\w+)`)
@@ -197,6 +205,11 @@ func (s *SqlTable) parseNonCreateTable(line string) error {
 	if len(matches) > 2 {
 		sqlTableField.RawFieldName = matches[1]
 		sqlTableField.FieldType = matches[2]
+
+		sqlTableField.IsJsonField = false
+		if sqlTableField.FieldType == "json" {
+			sqlTableField.IsJsonField = true
+		}
 
 		// 删除字段前缀
 		if len(s.FieldPrefix) > 0 {
@@ -335,7 +348,7 @@ func (s *SqlTable) getTag(field *SqlTableField) string {
 	}
 
 	if s.WithGorm {
-		tag = s.getGormTag(rawFieldName, field.IsPrimaryKey)
+		tag = s.getGormTag(rawFieldName, field.IsPrimaryKey, field.AutoIncrement)
 	}
 	if s.WithJson {
 		tag = s.getJsonTag(tag, rawFieldName, fieldName)
@@ -355,91 +368,75 @@ func (s *SqlTable) getTag(field *SqlTableField) string {
 	return tag
 }
 
-func (s *SqlTable) getGormTag(rawFieldName string, isPrimaryKey bool) string {
-	if !isPrimaryKey {
-		return fmt.Sprintf("gorm:\"column:%s\"", rawFieldName)
-	} else {
-		return fmt.Sprintf("gorm:\"column:%s;primaryKey\"", rawFieldName)
+func (s *SqlTable) getGormTag(rawFieldName string, isPrimaryKey, autoIncrement bool) string {
+	tags := []string{fmt.Sprintf("column:%s", rawFieldName)}
+
+	if isPrimaryKey {
+		tags = append(tags, "primaryKey")
 	}
+	if autoIncrement {
+		tags = append(tags, "autoIncrement")
+	}
+
+	return fmt.Sprintf("gorm:\"%s\"", strings.Join(tags, ";"))
 }
 
 func (s *SqlTable) getJsonTag(tag, rawFieldName, fieldName string) string {
-	var newTag string
+	jsonFieldName := fieldName
+
+	if s.JsonWithPrefix {
+		jsonFieldName = rawFieldName
+	}
 	if len(tag) == 0 {
-		if s.JsonWithPrefix {
-			newTag = fmt.Sprintf("json:\"%s\"", rawFieldName)
-		} else {
-			newTag = fmt.Sprintf("json:\"%s\"", fieldName)
-		}
-	} else {
-		if s.JsonWithPrefix {
-			newTag = fmt.Sprintf("%s json:\"%s\"", tag, rawFieldName)
-		} else {
-			newTag = fmt.Sprintf("%s json:\"%s\"", tag, fieldName)
-		}
+		return fmt.Sprintf("json:\"%s\"", jsonFieldName)
 	}
 
-	return newTag
+	return fmt.Sprintf("%s json:\"%s\"", tag, jsonFieldName)
 }
 
 func (s *SqlTable) getDbTag(tag, rawFieldName string) string {
-	var newTag string
 	if len(tag) == 0 {
-		newTag = fmt.Sprintf("db:\"%s\"", rawFieldName)
-	} else {
-		newTag = fmt.Sprintf("%s db:\"%s\"", tag, rawFieldName)
+		return fmt.Sprintf("db:\"%s\"", rawFieldName)
 	}
 
-	return newTag
+	return fmt.Sprintf("%s db:\"%s\"", tag, rawFieldName)
 }
 
 func (s *SqlTable) getFormTag(tag, rawFieldName, fieldName string) string {
-	var newTag string
+	formFieldName := fieldName
 
+	if s.FormWithPrefix {
+		formFieldName = rawFieldName
+	}
 	if len(tag) == 0 {
-		if s.FormWithPrefix {
-			newTag = fmt.Sprintf("form:\"%s\"", rawFieldName)
-		} else {
-			newTag = fmt.Sprintf("form:\"%s\"", fieldName)
-		}
-	} else {
-		if s.FormWithPrefix {
-			newTag = fmt.Sprintf("%s form:\"%s\"", tag, rawFieldName)
-		} else {
-			newTag = fmt.Sprintf("%s form:\"%s\"", tag, fieldName)
-		}
+		return fmt.Sprintf("form:\"%s\"", formFieldName)
 	}
 
-	return newTag
+	return fmt.Sprintf("%s form:\"%s\"", tag, formFieldName)
 }
 
 func (s *SqlTable) getCustomTags(tag, rawFieldName, fieldName string) string {
-	newTag := tag
 	customTags := strings.Split(s.CustomTags, ",")
+	newTags := make([]string, 0, len(customTags)+1)
 
+	if len(tag) > 0 {
+		newTags = append(newTags, tag)
+	}
 	for _, customTag := range customTags {
-		// 以"-"打头的表示使用去掉字段头的作为 tag
 		useFieldName := strings.HasPrefix(customTag, "-")
 		if useFieldName {
 			customTag = strings.TrimPrefix(customTag, "-")
 		}
 
-		if len(newTag) == 0 {
-			if !useFieldName {
-				newTag = fmt.Sprintf("%s:\"%s\"", customTag, rawFieldName)
-			} else {
-				newTag = fmt.Sprintf("%s:\"%s\"", customTag, fieldName)
-			}
-		} else {
-			if !useFieldName {
-				newTag = fmt.Sprintf("%s %s:\"%s\"", newTag, customTag, rawFieldName)
-			} else {
-				newTag = fmt.Sprintf("%s %s:\"%s\"", newTag, customTag, fieldName)
-			}
+		tagName := rawFieldName
+		if useFieldName {
+			tagName = fieldName
 		}
+
+		newTags = append(newTags, fmt.Sprintf("%s:\"%s\"", customTag, tagName))
 	}
 
-	return newTag
+	return strings.Join(newTags, " ")
 }
 
 func mysqlType2GoType(field *SqlTableField) string {
