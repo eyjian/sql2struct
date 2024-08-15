@@ -345,6 +345,8 @@ func (s *SqlTable) getTag(field *SqlTableField) string {
 	// 有字段前缀
 	if len(s.FieldPrefix) > 0 {
 		fieldName = strings.TrimPrefix(rawFieldName, s.FieldPrefix)
+	} else {
+		fieldName = rawFieldName
 	}
 
 	if s.WithGorm {
