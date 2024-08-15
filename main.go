@@ -12,7 +12,7 @@ import (
 	"github.com/eyjian/sql2struct/s2s"
 )
 
-const Version string = "0.0.7"
+const Version string = "0.0.8"
 
 var (
 	help    = flag.Bool("h", false, "Display a help message and exit.")
@@ -33,7 +33,7 @@ var (
 	jsonWithPrefix    = flag.Bool("json-with-prefix", false, "Whether json tag retains prefix of field name.")
 	formWithPrefix    = flag.Bool("form-with-prefix", false, "Whether from tag retains prefix of field name.")
 
-	customTags = flag.String("custom-tags", "", "Custom tags, separate multiple tags with commas, example: -tags=\"sql,-xorm\".")
+	customTags = flag.String("custom-tags", "", "Custom tags, separate multiple tags with commas, example: -tags=\"sql,-xorm,ent,reform\".")
 )
 
 func main() {
