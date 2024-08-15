@@ -457,7 +457,7 @@ func mysqlType2GoType(field *SqlTableField) string {
 		return "float32"
 	case "double", "decimal":
 		return "float64"
-	case "char", "varchar", "tinytext", "text", "mediumtext", "longtext":
+	case "char", "varchar", "tinytext", "text", "mediumtext", "longtext", "json":
 		return "string"
 	case "date", "datetime", "timestamp", "time":
 		return "time.Time"
