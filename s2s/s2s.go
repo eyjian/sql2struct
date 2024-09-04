@@ -49,6 +49,8 @@ type SqlTable struct {
 	FormWithPrefix    bool // 生成的 Form tag 时是否添加前缀
 
 	CustomTags string // 定制的 tags
+
+	PointerType bool // 是否映射为指针类型
 }
 
 func NewSqlTable() *SqlTable {
@@ -87,7 +89,7 @@ func (s *SqlTable) Sql2Struct(scanner *bufio.Scanner) (string, error) {
 		// 结束注释了
 		if inCommentBlock {
 			if strings.HasPrefix(line, "*/") ||
-					strings.HasSuffix(line, "*/") {
+				strings.HasSuffix(line, "*/") {
 				inCommentBlock = false
 			}
 			continue
@@ -286,6 +288,9 @@ func (s *SqlTable) toGoStruct() string {
 	for _, field := range s.Fields {
 		tag := s.getTag(field)
 		goType := mysqlType2GoType(field)
+		if s.PointerType {
+			goType = "*" + goType
+		}
 
 		// 过滤掉
 		if goType == "any" {
@@ -476,15 +481,15 @@ func mysqlType2GoType(field *SqlTableField) string {
 
 func skipLine(line string) bool {
 	return strings.HasPrefix(line, "key") ||
-			strings.HasPrefix(line, "index") ||
-			strings.HasPrefix(line, "unique") ||
-			strings.HasPrefix(line, "(") ||
-			strings.HasPrefix(line, ")") ||
-			strings.HasPrefix(line, "--") ||
-			strings.HasPrefix(line, "drop") ||
-			strings.HasPrefix(line, "partition") ||
-			strings.Contains(line, "engine=") ||
-			strings.Contains(line, "auto_increment=") ||
-			strings.Contains(line, "charset=") ||
-			strings.Contains(line, "partition ")
+		strings.HasPrefix(line, "index") ||
+		strings.HasPrefix(line, "unique") ||
+		strings.HasPrefix(line, "(") ||
+		strings.HasPrefix(line, ")") ||
+		strings.HasPrefix(line, "--") ||
+		strings.HasPrefix(line, "drop") ||
+		strings.HasPrefix(line, "partition") ||
+		strings.Contains(line, "engine=") ||
+		strings.Contains(line, "auto_increment=") ||
+		strings.Contains(line, "charset=") ||
+		strings.Contains(line, "partition ")
 }
