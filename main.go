@@ -12,7 +12,7 @@ import (
 	"github.com/eyjian/sql2struct/s2s"
 )
 
-const Version string = "0.0.9"
+const Version string = "0.0.10"
 
 var (
 	help    = flag.Bool("h", false, "Display a help message and exit.")
@@ -34,6 +34,8 @@ var (
 	formWithPrefix    = flag.Bool("form-with-prefix", false, "Whether from tag retains prefix of field name.")
 
 	customTags = flag.String("custom-tags", "", "Custom tags, separate multiple tags with commas, example: -tags=\"sql,-xorm,ent,reform\".")
+
+	withPointer = flag.Bool("pointer", false, "Use pointer types instead of object types.")
 )
 
 func main() {
@@ -72,6 +74,7 @@ func main() {
 	sqlTable.JsonWithPrefix = *jsonWithPrefix
 	sqlTable.FormWithPrefix = *formWithPrefix
 	sqlTable.CustomTags = *customTags
+	sqlTable.PointerType = *withPointer
 
 	scanner := bufio.NewScanner(file) // 创建一个扫描器，用于按行读取文件
 	structStr, err := sqlTable.Sql2Struct(scanner)
