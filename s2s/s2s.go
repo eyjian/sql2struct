@@ -50,7 +50,8 @@ type SqlTable struct {
 
 	CustomTags string // 定制的 tags
 
-	PointerType bool // 是否映射为指针类型
+	PointerType     bool // 是否映射为指针类型（含 time.Time 字段）
+	TimePointerType bool // 是否 time.Time 字段映射为指针类型
 }
 
 func NewSqlTable() *SqlTable {
@@ -289,6 +290,8 @@ func (s *SqlTable) toGoStruct() string {
 		tag := s.getTag(field)
 		goType := mysqlType2GoType(field)
 		if s.PointerType {
+			goType = "*" + goType
+		} else if s.TimePointerType && goType == "time.Time" {
 			goType = "*" + goType
 		}
 

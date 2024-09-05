@@ -12,7 +12,7 @@ import (
 	"github.com/eyjian/sql2struct/s2s"
 )
 
-const Version string = "0.0.10"
+const Version string = "0.0.11"
 
 var (
 	help    = flag.Bool("h", false, "Display a help message and exit.")
@@ -35,7 +35,8 @@ var (
 
 	customTags = flag.String("custom-tags", "", "Custom tags, separate multiple tags with commas, example: -tags=\"sql,-xorm,ent,reform\".")
 
-	withPointer = flag.Bool("pointer", false, "Use pointer types instead of object types.")
+	withPointer     = flag.Bool("pointer", false, "Use pointer types instead of object types.")
+	withTimePointer = flag.Bool("time-pointer", false, "Use pointer types instead of object types if type is time.Time.")
 )
 
 func main() {
@@ -50,6 +51,7 @@ func main() {
 	}
 	if len(*sqlFile) == 0 {
 		fmt.Fprintf(os.Stderr, "Parameter --sf is not set.\n")
+		showUsage()
 		os.Exit(2)
 	}
 
@@ -75,6 +77,7 @@ func main() {
 	sqlTable.FormWithPrefix = *formWithPrefix
 	sqlTable.CustomTags = *customTags
 	sqlTable.PointerType = *withPointer
+	sqlTable.TimePointerType = *withTimePointer
 
 	scanner := bufio.NewScanner(file) // 创建一个扫描器，用于按行读取文件
 	structStr, err := sqlTable.Sql2Struct(scanner)
