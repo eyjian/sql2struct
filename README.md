@@ -1,6 +1,6 @@
 ### sql2struct
 
-一个根据"CREATE TABLE"建表语句生成对应的Go语言结构体的工具，暂只支持 MySQL 表。支持自定义的 tags，通过参数"-tags"指定，多个自定义的 tags 间使用逗号分开。如果自定义的 tags 值以横杠"-"打头，则表示使用去掉字段名前缀作为值，否则使用字段名作为值。
+一个根据"CREATE TABLE"建表语句生成对应的Go语言结构体的工具，暂只支持 MySQL 表。支持自定义的 tags，通过参数"-tags"指定，多个自定义的 tags 间使用逗号分开。如果自定义的 tags 值以横杠"-"打头，则表示使用去掉字段名前缀作为值，否则使用字段名作为值。在线版：[https://www.hwten.com](https://www.hwten.com) 。
 
 ### 开发目的
 
