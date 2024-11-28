@@ -1,4 +1,4 @@
-// wrote by yijian on 2024/03/03
+// wrote by yijian on 2024/11/05
 package main
 
 import (
@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 )
 import (
 	"github.com/eyjian/sql2struct/s2s"
@@ -37,6 +36,10 @@ var (
 
 	withPointer     = flag.Bool("pointer", false, "Use pointer types instead of object types.")
 	withTimePointer = flag.Bool("time-pointer", false, "Use pointer types instead of object types if type is time.Time.")
+)
+
+var (
+	buildTime string // build time
 )
 
 func main() {
@@ -94,5 +97,5 @@ func showUsage() {
 }
 
 func showVersion() {
-	fmt.Printf("Version: %s, build at %s\n", Version, time.Now().Format("2006-01-02 15:04:05"))
+	fmt.Printf("Version: %s, build at %s\n", Version, buildTime)
 }
