@@ -6,9 +6,9 @@ sql2struct: main.go
 ifeq ($(OS),Windows_NT)
 	set GOOS=windows
 	set GOARCH=amd64
-	go build -o sql2struct.exe -ldflags "-X 'main.buildTime=`date +%Y%m%d%H%M%S`'" main.go
+	go mod tidy && go build -o sql2struct.exe -ldflags "-X 'main.buildTime=`date +%Y%m%d%H%M%S`'" main.go
 else
-	go build -o sql2struct -ldflags "-X 'main.buildTime=`date +%Y%m%d%H%M%S`'" main.go
+	go mod tidy && go build -o sql2struct -ldflags "-X 'main.buildTime=`date +%Y%m%d%H%M%S`'" main.go
 endif
 
 install: sql2struct
