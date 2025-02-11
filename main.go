@@ -11,7 +11,7 @@ import (
 	"github.com/eyjian/sql2struct/s2s"
 )
 
-const Version string = "0.0.12"
+const Version string = "0.0.13"
 
 var (
 	help    = flag.Bool("h", false, "Display a help message and exit.")
