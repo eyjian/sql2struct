@@ -23,3 +23,4 @@ go.work
 .idea
 sql2struct
 test.sql
+go.sum
