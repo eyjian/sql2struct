@@ -76,7 +76,7 @@ type Products struct {
 * 默认不输出取表名函数，可通过参数"--with-tablename-func"开启
 * 默认 json 和 form 两种 tag 会去掉字段名的前缀部分，但可通过命令行参数"-json-with-prefix”和"-form-with-prefix"分别控制
 
-### Makefile 中应用示例
+### Makefile 中应用示例1
 
 ```shell
 all: sql sql-01 sql-02 sql-03
@@ -94,6 +94,24 @@ sql-02: example-02.sql
 
 sql-03: example-03.sql
 	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true -tags="sql,-xorm" >> example.go
+```
+
+### Makefile 中应用示例2
+
+```shell
+SQL_DIR := sql # sql 文件存放目录
+SQL_FILES := $(wildcard $(SQL_DIR)/*.sql)
+GO_FILES := $(patsubst $(SQL_DIR)/%.sql,%_gen.go,$(SQL_FILES))
+
+all: $(GO_FILES)
+
+.PHONY: clean
+
+%_gen.go: $(SQL_DIR)/%.sql
+	sql2struct -sf=$< -package="model" -with-tablename-func=true > $@
+
+clean:
+	rm -f $(GO_FILES)
 ```
 
 ### 使用帮助
