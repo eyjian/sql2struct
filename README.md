@@ -78,6 +78,26 @@ type Products struct {
 
 ### Makefile 中应用示例1
 
+推荐采用这种方式，增减文件不用修改 Makefile。为 sql 文件建独立目录存放，生成的 go 文件放在上一级目录或者专门目录，生成的 go 文件名以“_gen.go”结尾。注意通过参数“-package”指定 package 名。
+
+```shell
+SQL_DIR := sql # sql 文件存放目录
+SQL_FILES := $(wildcard $(SQL_DIR)/*.sql)
+GO_FILES := $(patsubst $(SQL_DIR)/%.sql,%_gen.go,$(SQL_FILES))
+
+all: $(GO_FILES)
+
+.PHONY: clean
+
+%_gen.go: $(SQL_DIR)/%.sql
+	sql2struct -sf=$< -package="model" -with-tablename-func=true > $@
+
+clean:
+	rm -f $(GO_FILES)
+```
+
+### Makefile 中应用示例2
+
 ```shell
 all: sql sql-01 sql-02 sql-03
 
@@ -94,24 +114,6 @@ sql-02: example-02.sql
 
 sql-03: example-03.sql
 	echo "" >> example.go&&sql2struct -sf=$< -json-with-prefix=true -tags="sql,-xorm" >> example.go
-```
-
-### Makefile 中应用示例2
-
-```shell
-SQL_DIR := sql # sql 文件存放目录
-SQL_FILES := $(wildcard $(SQL_DIR)/*.sql)
-GO_FILES := $(patsubst $(SQL_DIR)/%.sql,%_gen.go,$(SQL_FILES))
-
-all: $(GO_FILES)
-
-.PHONY: clean
-
-%_gen.go: $(SQL_DIR)/%.sql
-	sql2struct -sf=$< -package="model" -with-tablename-func=true > $@
-
-clean:
-	rm -f $(GO_FILES)
 ```
 
 ### 使用帮助
